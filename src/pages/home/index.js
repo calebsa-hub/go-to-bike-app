@@ -1,4 +1,4 @@
-import React, {Component, useEffect, useState} from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import { Alert, StyleSheet, Text, TouchableOpacity, View, useAnimatedValue } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 //import MapView, { Marker, Polyline } from 'react-native-maps';
@@ -19,10 +19,7 @@ import SQLiteManager from '../../database/SQLiteManager';
 const App = () => {
 
   //let treinoController = new Training();
-  
-
-  function resetData()
-  {
+  function resetData() {
     setNomeTreino('');
     setTotalDistance(0);
     setMaxVelocity(0);
@@ -37,14 +34,20 @@ const App = () => {
     const banco = new SQLiteManager();
     const dataAtual = new Date();
     const timestamp = Math.floor(dataAtual.getTime() / 1000);
+    let auxCoords = [];
     let coordenadas = '';
+    auxCoords = coords;
 
-    if(!Number.isFinite(maxVelocity) || Number.isNaN(maxVelocity)){
+
+    if (!Number.isFinite(maxVelocity) || Number.isNaN(maxVelocity)) {
       maxVelocity = 0;
     }
 
-    if(coords.length() > 2) {
+    if (auxCoords.length > 2) {
       coordenadas = JSON.stringify(coords);
+    } else {
+      auxCoords = [[latitudeCity, longitudeCity]];
+      coordenadas = JSON.stringify(auxCoords);
     }
 
     const obj = {
@@ -59,16 +62,16 @@ const App = () => {
       timer: timer,
       dataAtual: timestamp
     }
-    console.log('tempo: ', timestamp);
+    console.log('coordenadas: ', coordenadas);
     banco.create(obj).then(() => {
       Alert('Treino Salvo')
     })
-    .catch(() => {
-      Alert('Erro ao salvar treino');
-    });
+      .catch(() => {
+        Alert('Erro ao salvar treino');
+      });
 
     setModalVisible(false);
-    
+
     handlePlayPress();
   };
 
@@ -106,8 +109,7 @@ const App = () => {
     setModalVisible(true);
   };
 
-  function formatTime (current_time) 
-  {
+  function formatTime(current_time) {
     const hours = (Math.floor(current_time / 3600));
     current_time %= 3600;
     const minutes = (Math.floor(current_time / 60));
@@ -122,19 +124,17 @@ const App = () => {
     return formated;
   }
 
-  function getMediaVelocity(velocities) 
-  {
+  function getMediaVelocity(velocities) {
     if (velocities.length === 0) {
       return 0;
     }
 
     const soma = velocities.reduce((acumulator, valor) => acumulator + valor, 0);
-    const media = (soma/velocities.length).toFixed(2);
+    const media = (soma / velocities.length).toFixed(2);
     return (Number.isFinite(media) && !Number.isNaN(media)) ? media : 0;
   }
 
-  function getCaloriasQueimadas(distanceTotalWay, mediaVelocity, maxVelocity, timer) 
-  {
+  function getCaloriasQueimadas(distanceTotalWay, mediaVelocity, maxVelocity, timer) {
     const velocidadeMediaMs = mediaVelocity / 3.6;
     //const velocidadeMaxMs = maxVelocity / 3.6;
 
@@ -147,35 +147,31 @@ const App = () => {
     return (Number.isFinite(calorias) && !Number.isNaN(calorias)) ? calorias : 0;
   }
 
-  function calcularMet(velocity)
-  {
-    if(velocity < 10) {
+  function calcularMet(velocity) {
+    if (velocity < 10) {
       return 4.0;
-    } else if(velocity < 20) {
+    } else if (velocity < 20) {
       return 6.0;
     } else {
       return 8.0;
     }
   }
 
-  function getRitmo(distanceTotalWay, timer) 
-  {
-    const timeInMinutes = timer/60;
-    const ritmo = (timeInMinutes/distanceTotalWay).toFixed(2);
+  function getRitmo(distanceTotalWay, timer) {
+    const timeInMinutes = timer / 60;
+    const ritmo = (timeInMinutes / distanceTotalWay).toFixed(2);
 
     return (Number.isFinite(ritmo) && !Number.isNaN(ritmo)) ? ritmo : 0;
   }
 
-  function getCadencia(mediaVelocity, tamRoda) 
-  {
+  function getCadencia(mediaVelocity, tamRoda) {
     const velocityMs = mediaVelocity / 3.6;
-    const RPM = ((velocityMs*60) / tamRoda).toFixed(2);
+    const RPM = ((velocityMs * 60) / tamRoda).toFixed(2);
 
     return (Number.isFinite(RPM) && !Number.isNaN(RPM)) ? RPM : 0;
   }
 
-  function convertAro(aroBikeUser)
-  {
+  function convertAro(aroBikeUser) {
     const mapAros = {
       '26': 0.559,
       '24': 0.507,
@@ -196,14 +192,14 @@ const App = () => {
       const { latitude, longitude } = position.coords;
       coords.push({ latitude, longitude });
       setLatitudeCity(position.coords.latitude);
-      setLongitudeCity(position.coords.longitude);  
+      setLongitudeCity(position.coords.longitude);
     },
     (error) => {
       console.warn(error.message);
     },
     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
   );
-  
+
   async function getCity() {
     try {
       const response = await Api.get(`json?latlng=${latitudeCity},${longitudeCity}&key=${apiKey}`)
@@ -213,16 +209,16 @@ const App = () => {
       console.log("ERRO" + error)
     }
   }
-  
+
   async function getTemperature() {
     try {
       axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKeyOpenWeather}&units=metric`)
-      .then((response) => {
-        setCityTemperature((response.data.main.temp).toFixed(1));
-      })
+        .then((response) => {
+          setCityTemperature((response.data.main.temp).toFixed(1));
+        })
     } catch (error) {
-        setCityTemperature('Aguardando rede...')
-        console.error(error);
+      setCityTemperature('Aguardando rede...')
+      console.error(error);
     }
   }
 
@@ -231,7 +227,7 @@ const App = () => {
     toggleTracking();
     setPlayPressed(!playPressed);
   };
-  
+
   const handlePausePress = () => {
     setPausePressed(!pausePressed);
     toggleTracking();
@@ -250,7 +246,7 @@ const App = () => {
   const toggleTracking = () => {
     setTracking(!tracking);
   };
-  
+
   getCity();
   getTemperature();
 
@@ -273,14 +269,14 @@ const App = () => {
 
           if (lastPosition) {
             const distance = geolib.getDistance(lastPosition, { latitude, longitude });
-            
-            dTotal += (distance/1000);
+
+            dTotal += (distance / 1000);
             //setTotalDistance(dTotal);
           }
           lastPosition = { latitude, longitude };
         },
         (error) => console.error(error),
-        { enableHighAccuracy:true, timeout: 20000, maximumAge: 1000, distanceFilter: 10}
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000, distanceFilter: 10 }
       );
 
       intervalId = BackgroundTimer.setInterval(() => {
@@ -293,30 +289,30 @@ const App = () => {
       };
     }
 
-   velocities.push((distanceTotalWay/timer).toFixed(2));
-   setMediaVelocity(getMediaVelocity(velocities));
-   setMaxVelocity(Math.max(...velocities));
-   setCaloriasUser(getCaloriasQueimadas(distanceTotalWay, mediaVelocity, maxVelocity, timer));
-   setRitmo(getRitmo(distanceTotalWay, timer));
-   convertAro(26);
-   setCadencia(getCadencia(mediaVelocity, tamRoda));
+    velocities.push((distanceTotalWay / timer).toFixed(2));
+    setMediaVelocity(getMediaVelocity(velocities));
+    setMaxVelocity(Math.max(...velocities));
+    setCaloriasUser(getCaloriasQueimadas(distanceTotalWay, mediaVelocity, maxVelocity, timer));
+    setRitmo(getRitmo(distanceTotalWay, timer));
+    convertAro(26);
+    setCadencia(getCadencia(mediaVelocity, tamRoda));
   }, [tracking]);
 
-  return(
-    <View style = {{flex:1}}>
-      <View style={{backgroundColor: "#1C2120"}}>
-        <View style={{flexDirection:'row', alignItems: 'center'}}>
-          <View style={{paddingRight: 5}}>
-            <Icon name="location-on" size={25} color="white"/>
+  return (
+    <View style={{ flex: 1 }}>
+      <View style={{ backgroundColor: "#1C2120" }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ paddingRight: 5 }}>
+            <Icon name="location-on" size={25} color="white" />
           </View>
           <View>
             <Text style={styles.text}>{cityName}</Text>
           </View>
         </View>
 
-        <View style={{flexDirection:'row', alignItems: 'center', paddingTop:2}}>
-          <View style={{paddingRight: 5}}>
-            <Icon name="thermostat" size={25} color="white"/>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 2 }}>
+          <View style={{ paddingRight: 5 }}>
+            <Icon name="thermostat" size={25} color="white" />
           </View>
           <View>
             <Text style={styles.text}>{temperature}º C</Text>
@@ -324,13 +320,13 @@ const App = () => {
         </View>
       </View>
 
-      <View style={{flex: 1, backgroundColor: "#1C2120", alignItems:"center", height:300, paddingTop: 8}}>
-        <Text style={{color:'white', fontSize: 20}}>Hoje você pedalou</Text>
-        <View style={{padding:20, justifyContent: "center", flexDirection: 'row', alignItems: 'baseline'}}>
-          <Text style={{fontSize:100, color: "white"}}>{totalDistance.toFixed(2)}</Text>
-          <Text style={{fontSize:36, color:"white"}}> Km</Text> 
+      <View style={{ flex: 1, backgroundColor: "#1C2120", alignItems: "center", height: 300, paddingTop: 8 }}>
+        <Text style={{ color: 'white', fontSize: 20 }}>Hoje você pedalou</Text>
+        <View style={{ padding: 20, justifyContent: "center", flexDirection: 'row', alignItems: 'baseline' }}>
+          <Text style={{ fontSize: 100, color: "white" }}>{totalDistance.toFixed(2)}</Text>
+          <Text style={{ fontSize: 36, color: "white" }}> Km</Text>
         </View>
-        <View style={{ flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row' }}>
           <TouchableOpacity style={styles.buttonWeek}>
             <Text style={styles.textButtonWeek}>Dom</Text>
           </TouchableOpacity>
@@ -357,29 +353,29 @@ const App = () => {
         <View>
           {(!playPressed) ? (
             <TouchableOpacity onPress={handlePlayPress} style={styles.buttonPlay}>
-              <Icon name='play-circle' size={80} color="#1C2120"/>
+              <Icon name='play-circle' size={80} color="#1C2120" />
             </TouchableOpacity>
           ) : (
-            <View style={{flexDirection: 'row'}}>
-              <View style={{paddingRight: 30}}>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ paddingRight: 30 }}>
                 {/* {isVisible && ( */}
-                  <TouchableOpacity onPress={handlePausePress} style={styles.buttonPause}>
-                    <Icon name={'pause-circle'} size={80} color="#1C2120"/>
-                  </TouchableOpacity>
-                  {/* // <TouchableOpacity onPress={toggleTracking} style={styles.buttonPlay}>
+                <TouchableOpacity onPress={handlePausePress} style={styles.buttonPause}>
+                  <Icon name={'pause-circle'} size={80} color="#1C2120" />
+                </TouchableOpacity>
+                {/* // <TouchableOpacity onPress={toggleTracking} style={styles.buttonPlay}>
                   //   <Icon name={'play-circle'} size={80} color="#1C2120"/>
                   // </TouchableOpacity> */}
                 {/* )} */}
-                
+
               </View>
               <View>
                 <TouchableOpacity onPress={showConfirmationModal} style={styles.buttonStop}>
-                  <Icon name='stop-circle' size={80} color="#1C2120"/>
+                  <Icon name='stop-circle' size={80} color="#1C2120" />
                 </TouchableOpacity>
                 <Modal isVisible={isModalVisible}>
                   <View style={styles.modalView}>
-                    <View style={{alignItems: 'center', paddingBottom: 10}}>
-                      <Text style={{fontSize: 20, fontWeight: 'bold'}}>Salvar treino</Text>
+                    <View style={{ alignItems: 'center', paddingBottom: 10 }}>
+                      <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Salvar treino</Text>
                     </View>
                     <View style={{}}>
                       <TextInput
@@ -388,38 +384,38 @@ const App = () => {
                         onChangeText={(text) => setNomeTreino(text)}
                       />
                     </View>
-                    <View style={{flexDirection: 'row', justifyContent: 'center',padding:20}}>
-                      <Button title='Salvar' onPress={() => this.storeTreino(nomeTreino, coords, distanceTotalWay, mediaVelocity, maxVelocity, calorias, ritmo, cadencia, timer)} style={styles.buttonModalSave}><Text style={{color: 'white'}}>Salvar</Text></Button>
-                      <Button title='Cancelar' onPress={() => setModalVisible(false)} style={styles.buttonModalCancel}><Text style={{color:'white'}}>Cancelar</Text></Button>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 20 }}>
+                      <Button title='Salvar' onPress={() => this.storeTreino(nomeTreino, coords, distanceTotalWay, mediaVelocity, maxVelocity, calorias, ritmo, cadencia, timer)} style={styles.buttonModalSave}><Text style={{ color: 'white' }}>Salvar</Text></Button>
+                      <Button title='Cancelar' onPress={() => setModalVisible(false)} style={styles.buttonModalCancel}><Text style={{ color: 'white' }}>Cancelar</Text></Button>
                     </View>
                   </View>
                 </Modal>
               </View>
             </View>
           )}
-          
+
         </View>
-        
+
       </View>
 
       <View style={styles.homeScreen}>
-        
-        <View style={{ flexDirection: "row"}}>
-          <View style={{flex:1, backgroundColor: "#1C2120"}}>
+
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ flex: 1, backgroundColor: "#1C2120" }}>
             <View style={
-                {
-                  flexDirection:"row", 
-                  justifyContent:'center', 
-                  padding:25,
-                  borderColor:'#FFF', 
-                  borderTopWidth: 0.3, 
-                  borderRightWidth: 0.3
-                }
+              {
+                flexDirection: "row",
+                justifyContent: 'center',
+                padding: 25,
+                borderColor: '#FFF',
+                borderTopWidth: 0.3,
+                borderRightWidth: 0.3
+              }
             }>
-              <View style={{paddingRight:10}}>
-                <Icon name="bolt" size={20} color="white"/>
+              <View style={{ paddingRight: 10 }}>
+                <Icon name="bolt" size={20} color="white" />
               </View>
-              <View style={{alignItems: "center"}}>
+              <View style={{ alignItems: "center" }}>
                 <Text style={styles.textTableTop}>Gasto Calorico </Text>
                 <Text style={styles.textTableCell}>{calorias} Cal</Text>
               </View>
@@ -427,18 +423,18 @@ const App = () => {
 
             <View style={
               {
-                flexDirection:"row", 
-                justifyContent:'center', 
-                padding:25, 
-                borderColor:'#FFF', 
-                borderTopWidth: 0.3, 
+                flexDirection: "row",
+                justifyContent: 'center',
+                padding: 25,
+                borderColor: '#FFF',
+                borderTopWidth: 0.3,
                 borderRightWidth: 0.3
               }
             }>
-              <View style={{paddingRight:10}}>
-                <Icon name="monitor-heart" size={20} color="white"/>
+              <View style={{ paddingRight: 10 }}>
+                <Icon name="monitor-heart" size={20} color="white" />
               </View>
-              <View style={{alignItems: "center"}}>
+              <View style={{ alignItems: "center" }}>
                 <Text style={styles.textTableTop}>Ritmo</Text>
                 <Text style={styles.textTableCell}>{(Number.isNaN(ritmo)) ? ritmo : 0} min/Km</Text>
               </View>
@@ -446,63 +442,63 @@ const App = () => {
 
             <View style={
               {
-                flexDirection:"row", 
-                justifyContent:'center', 
-                padding:25, 
-                borderColor:'#FFF', 
-                borderTopWidth: 0.3, 
+                flexDirection: "row",
+                justifyContent: 'center',
+                padding: 25,
+                borderColor: '#FFF',
+                borderTopWidth: 0.3,
                 borderRightWidth: 0.3
               }
             }>
-              <View style={{paddingRight:10}}>
-                <Icon name="pedal-bike" size={20} color="white"/>
+              <View style={{ paddingRight: 10 }}>
+                <Icon name="pedal-bike" size={20} color="white" />
               </View>
-              <View style={{alignItems: "center"}}>
+              <View style={{ alignItems: "center" }}>
                 <Text style={styles.textTableTop}>Cadência</Text>
                 <Text style={styles.textTableCell}>{(Number.isNaN(cadencia)) ? cadencia : 0} RPM</Text>
               </View>
             </View>
           </View>
 
-          <View style={{flex: 1, backgroundColor: "#1C2120"}}>
+          <View style={{ flex: 1, backgroundColor: "#1C2120" }}>
 
             <View style={
               {
-                flexDirection:"row", 
-                justifyContent:'center', 
-                padding:25, 
-                borderColor:'#FFF', 
+                flexDirection: "row",
+                justifyContent: 'center',
+                padding: 25,
+                borderColor: '#FFF',
                 borderTopWidth: 0.3
               }
             }>
-              <View style={{paddingRight:10}}>
-                <Icon name="schedule" size={20} color="white"/>
+              <View style={{ paddingRight: 10 }}>
+                <Icon name="schedule" size={20} color="white" />
               </View>
-              <View style={{alignItems: "center"}}>
+              <View style={{ alignItems: "center" }}>
                 <Text style={styles.textTableTop}>Tempo Total (H:m:s)</Text>
                 <Text style={styles.textTableCell}>
-                  { formatTime(timer) }
+                  {formatTime(timer)}
                 </Text>
               </View>
             </View>
 
             <View style={
               {
-                flexDirection:"row", 
-                justifyContent:'center', 
-                padding:25, 
-                borderColor:'#FFF', 
+                flexDirection: "row",
+                justifyContent: 'center',
+                padding: 25,
+                borderColor: '#FFF',
                 borderTopWidth: 0.3
               }
             }>
-              <View style={{paddingRight:10}}>
-                <Icon name="speed" size={20} color="white"/>
+              <View style={{ paddingRight: 10 }}>
+                <Icon name="speed" size={20} color="white" />
               </View>
-              <View style={{alignItems: "center"}}>
+              <View style={{ alignItems: "center" }}>
                 <Text style={styles.textTableTop}>Vel. média</Text>
                 <Text style={styles.textTableCell}>
                   {
-                    (Number.isNaN(mediaVelocity)) ? mediaVelocity : '0' 
+                    (Number.isNaN(mediaVelocity)) ? mediaVelocity : '0'
                   } Km/h
                 </Text>
               </View>
@@ -510,19 +506,19 @@ const App = () => {
 
             <View style={
               {
-                flexDirection:"row",
-                justifyContent:'center', 
-                padding:25, 
-                borderColor:'#FFF', 
+                flexDirection: "row",
+                justifyContent: 'center',
+                padding: 25,
+                borderColor: '#FFF',
                 borderTopWidth: 0.3
               }
             }>
-              <View style={{paddingRight:10}}>
-                <Icon name="rocket" size={20} color="white"/>
+              <View style={{ paddingRight: 10 }}>
+                <Icon name="rocket" size={20} color="white" />
               </View>
-              <View style={{alignItems: "center"}}>
+              <View style={{ alignItems: "center" }}>
                 <Text style={styles.textTableTop}>Vel. máx</Text>
-                <Text style={styles.textTableCell}>{ (velocities.length > 0) ? maxVelocity : '0' } Km/h</Text>
+                <Text style={styles.textTableCell}>{(velocities.length > 0) ? maxVelocity : '0'} Km/h</Text>
               </View>
             </View>
           </View>
@@ -535,30 +531,30 @@ const App = () => {
 export default App;
 
 const styles = StyleSheet.create({
-  text: { 
+  text: {
     color: "white"
   },
 
   homeScreen: {
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: "red"
   },
 
   mapScreen: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: "#1C2120"
   },
 
   historyScreen: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: "#1C2120"
   },
-  
+
   container: {
     padding: 15,
   },
