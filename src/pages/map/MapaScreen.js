@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import SQLiteManager from '../../database/SQLiteManager';
 import Modal from 'react-native-modal';
@@ -12,15 +12,13 @@ export default class MapaScreen extends Component {
     super(props)
     this.state = {
       listaTreinos: [],
-      initialRegion: {
-        latitude: 0,
-        longitude: 0,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      },
+      // initialRegion: {
+
+      // },
       isModalVisible: false,
       idTreino: 0,
       nomeTreino: '',
+      coordenadas: [],
       distanciaTotal: 0,
       tempoTotal: 0,
       calorias: 0,
@@ -95,6 +93,13 @@ export default class MapaScreen extends Component {
     this.setState({ isModalVisible: false })
   }
 
+  drawMap = (coords) => {
+
+    let arrayCoordenadas = JSON.parse(coords);
+    console.log('coords: ', arrayCoordenadas);
+    this.setState({ coordenadas: arrayCoordenadas });
+  }
+
   deleteTreino = () => {
     const banco = new SQLiteManager();
     banco.remove(this.state.idTreino).then(this.setState({ idTreino: 0 }))
@@ -115,7 +120,18 @@ export default class MapaScreen extends Component {
         <View style={styles.containerMapa}>
           <MapView
             style={{ flex: 1 }}
-            initialRegion={this.state.initialRegion}
+            // initialRegion={{
+            //   latitude: this.state.coordenadas.length > 0 ? this.state.coordenadas[0][0] : 0,
+            //   longitude: this.state.coordenadas.length > 0 ? this.state.coordenadas[0][1] : 0,
+            //   latitudeDelta: 0.1,
+            //   longitudeDelta: 0.1,
+            // }}
+            region={{
+              latitude: this.state.coordenadas.length > 0 ? this.state.coordenadas[0][0] : 0,
+              longitude: this.state.coordenadas.length > 0 ? this.state.coordenadas[0][1] : 0,
+              latitudeDelta: 0.1,
+              longitudeDelta: 0.1,
+            }}
             showsUserLocation={true}
             showsMyLocationButton={true}
             followsUserLocation={true}
@@ -125,8 +141,18 @@ export default class MapaScreen extends Component {
             pitchEnabled={true}
             rotateEnabled={true}
           >
+            {this.state.coordenadas.length > 0 && (
+              <Polyline
+                coordinates={this.state.coordenadas.map((position) => ({
+                  latitude: position[0],
+                  longitude: position[1],
+                }))}
+                strokeColor='#008DFF'
+                strokeWidth={4}
+              />
+            )}
             <Marker
-              coordinate={{ latitude: this.state.initialRegion.latitude, longitude: this.state.initialRegion.longitude }}
+              coordinate={{ latitude: this.state.coordenadas.length > 0 ? this.state.coordenadas[0][0] : 0.1, longitude: this.state.coordenadas.length > 0 ? this.state.coordenadas[0][1] : 0.1 }}
               title="Minha Localização"
             />
           </MapView>
@@ -187,7 +213,8 @@ export default class MapaScreen extends Component {
           <ScrollView style={{ height: 300 }}>
             {(this.state.listaTreinos) ?
               (this.state.listaTreinos).map((training, index) => (
-                <TouchableOpacity activeOpacity={0.7}>
+                
+                <TouchableOpacity activeOpacity={0.7} onPress={() => this.drawMap(training.coordenadas)}>
                   <View style={{ flexDirection: 'row', borderBottomWidth: 0.5, borderColor: 'white', paddingBottom: 5 }} key={index}>
                     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                       <Text style={{ fontSize: 20, fontWeight: 'bold', paddingHorizontal: 15 }}>{this.getData(training.data)}</Text>
@@ -221,7 +248,7 @@ export default class MapaScreen extends Component {
             }
           </ScrollView>
         </View>
-      </View>
+      </View >
     );
   }
 
@@ -359,7 +386,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     borderRadius: 5,
     marginLeft: 20,
-  }, 
+  },
 
   buttonEdit: {
     backgroundColor: "#62BA44",
