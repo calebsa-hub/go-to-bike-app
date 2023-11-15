@@ -37,18 +37,18 @@ export default class SQLiteManager {
                 .catch((error) => {
                   db.transaction((tx) => {
                     db.executeSql(
-                      "CREATE TABLE IF NOT EXISTS trainings" + 
-                      "(id INTEGER PRIMARY KEY AUTOINCREMENT,"+ 
-                        "nome_treino TEXT,"+ 
-                        "coordenadas TEXT"+
-                        "distancia_total DOUBLE,"+ 
-                        "velocidade_media DOUBLE,"+ 
-                        "velocidade_maxima DOUBLE,"+ 
-                        "calorias DOUBLE,"+ 
-                        "ritmo DOUBLE,"+ 
-                        "cadencia DOUBLE,"+ 
-                        "tempo_total INTEGER,"+ 
-                        "data INTERGER);")
+                      "CREATE TABLE IF NOT EXISTS trainings" +
+                      "(id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                      "nome_treino TEXT," +
+                      "coordenadas TEXT" +
+                      "distancia_total DOUBLE," +
+                      "velocidade_media DOUBLE," +
+                      "velocidade_maxima DOUBLE," +
+                      "calorias DOUBLE," +
+                      "ritmo DOUBLE," +
+                      "cadencia DOUBLE," +
+                      "tempo_total INTEGER," +
+                      "data INTERGER);")
                   })
                     .then(() => {
                       console.log('Table created success!')
@@ -97,27 +97,27 @@ export default class SQLiteManager {
         db.transaction((tx) => {
           //comando SQL modificável
           tx.executeSql(
-            "INSERT INTO trainings" + 
-            "(nome_treino," + 
+            "INSERT INTO trainings" +
+            "(nome_treino," +
             "coordenadas," +
             "distancia_total," +
-            "velocidade_media," + 
-            "velocidade_maxima," + 
-            "calorias," + 
-            "ritmo," + 
-            "cadencia," + 
-            "tempo_total," + 
+            "velocidade_media," +
+            "velocidade_maxima," +
+            "calorias," +
+            "ritmo," +
+            "cadencia," +
+            "tempo_total," +
             "data) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-            [ 
-              obj.nomeTreino, 
-              obj.coordenadas, 
-              obj.distanceTotalWay, 
-              obj.mediaVelocity, 
-              obj.maxVelocity, 
-              obj.calorias, 
-              obj.ritmo, 
-              obj.cadencia, 
-              obj.timer, 
+            [
+              obj.nomeTreino,
+              obj.coordenadas,
+              obj.distanceTotalWay,
+              obj.mediaVelocity,
+              obj.maxVelocity,
+              obj.calorias,
+              obj.ritmo,
+              obj.cadencia,
+              obj.timer,
               obj.dataAtual
             ],
             //-----------------------
@@ -264,8 +264,8 @@ export default class SQLiteManager {
             var len = results.rows.length;
             for (let i = 0; i < len; i++) {
               let row = results.rows.item(i);
-              const { id, nome_treino, distancia_total, velocidade_media, velocidade_maxima, calorias, ritmo, cadencia, tempo_total, data } = row;
-              lista.push({ id, nome_treino, distancia_total, velocidade_media, velocidade_maxima, calorias, ritmo, cadencia, tempo_total, data });
+              const { id, nome_treino, coordenadas, distancia_total, velocidade_media, velocidade_maxima, calorias, ritmo, cadencia, tempo_total, data } = row;
+              lista.push({ id, nome_treino, coordenadas, distancia_total, velocidade_media, velocidade_maxima, calorias, ritmo, cadencia, tempo_total, data });
             }
             //console.log(lista);
             resolve(lista);
