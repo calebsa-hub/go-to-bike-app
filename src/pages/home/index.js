@@ -18,6 +18,13 @@ import SQLiteManager from '../../database/SQLiteManager';
 //SQLiteManager.initDB();
 const App = () => {
 
+  getAllTrainings = () => {
+    const banco = new SQLiteManager();
+    banco.all().then(lista => { setAllTrainingsList(lista) })
+  }
+
+
+
   //let treinoController = new Training();
   function resetData() {
     setNomeTreino('');
@@ -104,6 +111,7 @@ const App = () => {
   const [pausePressed, setPausePressed] = useState(false);
   const [stopPressed, setStopPressed] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [allTrainings, setAllTrainingsList] = useState([]);
 
   const showConfirmationModal = () => {
     setModalVisible(true);
@@ -122,6 +130,32 @@ const App = () => {
     const formated = `${formatedHours}:${formatedMinutes}:${formatedLastSeconds}`;
 
     return formated;
+  }
+
+  getDay = (timestamp) => {
+    const data = new Date(timestamp * 1000);
+
+    const diasDaSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+
+    const diaDaSemana = diasDaSemana[data.getDay()];
+
+    return diaDaSemana;
+  }
+
+  dataFromWeekDay = (day) => {
+    let flagNewestTraining = false;
+    allTrainings.map((training, index) => {
+      if (getDay(training.data) == day && !flagNewestTraining) {
+        flagNewestTraining = true;
+        setTotalDistance(training.distancia_total);
+        setCaloriasUser(training.calorias);
+        setRitmo(training.ritmo);
+        setCadencia(training.cadencia);
+        setTimer(training.tempo_total);
+        setMediaVelocity(training.velocidade_media);
+        setMaxVelocity(training.velocidade_maxima);
+      }
+    })
   }
 
   function getMediaVelocity(velocities) {
@@ -296,6 +330,7 @@ const App = () => {
     setRitmo(getRitmo(distanceTotalWay, timer));
     convertAro(26);
     setCadencia(getCadencia(mediaVelocity, tamRoda));
+    getAllTrainings();
   }, [tracking]);
 
   return (
@@ -327,25 +362,25 @@ const App = () => {
           <Text style={{ fontSize: 36, color: "white" }}> Km</Text>
         </View>
         <View style={{ flexDirection: 'row' }}>
-          <TouchableOpacity style={styles.buttonWeek}>
+          <TouchableOpacity style={styles.buttonWeek} onPress={() => dataFromWeekDay('Dom')}>
             <Text style={styles.textButtonWeek}>Dom</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonWeek}>
+          <TouchableOpacity style={styles.buttonWeek} onPress={() => dataFromWeekDay('Seg')}>
             <Text style={styles.textButtonWeek}>Seg</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonWeek}>
+          <TouchableOpacity style={styles.buttonWeek} onPress={() => dataFromWeekDay('Ter')}>
             <Text style={styles.textButtonWeek}>Ter</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonWeek}>
+          <TouchableOpacity style={styles.buttonWeek} onPress={() => dataFromWeekDay('Qua')}>
             <Text style={styles.textButtonWeek}>Qua</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonWeek}>
+          <TouchableOpacity style={styles.buttonWeek} onPress={() => dataFromWeekDay('Qui')}>
             <Text style={styles.textButtonWeek}>Qui</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonWeek}>
+          <TouchableOpacity style={styles.buttonWeek} onPress={() => dataFromWeekDay('Sex')}>
             <Text style={styles.textButtonWeek}>Sex</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonWeek}>
+          <TouchableOpacity style={styles.buttonWeek} onPress={() => dataFromWeekDay('Sab')}>
             <Text style={styles.textButtonWeek}>Sáb</Text>
           </TouchableOpacity>
         </View>
