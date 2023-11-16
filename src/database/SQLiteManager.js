@@ -227,32 +227,6 @@ export default class SQLiteManager {
     });
   };
 
-  /**
-   * BUSCA TODOS OS REGISTROS DE UMA DETERMINADA TABELA
-   * - Não recebe parâmetros;
-   * - Retorna uma Promise:
-   *  - O resultado da Promise é uma lista (Array) de objetos;
-   *  - Pode retornar erro (reject) caso o ID não exista ou então caso ocorra erro no SQL;
-   *  - Pode retornar um array vazio caso não existam registros.
-   */
-  // all() {
-  //   //let db;
-  //   return new Promise((resolve, reject) => {
-  //     this.initDB().then((db) => {
-  //       db.transaction((tx) => {
-  //         //comando SQL modificável
-  //         tx.executeSql(
-  //           "SELECT * FROM trainings;",
-  //           [],
-  //           //-----------------------
-  //           (_, { rows }) => resolve(rows._array),
-  //           (_, error) => reject(error) // erro interno em tx.executeSql
-  //         );
-  //       });
-  //     })
-  //   });
-  // };
-
   all() {
     return new Promise((resolve) => {
       const lista = [];
