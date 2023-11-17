@@ -12,12 +12,14 @@ import BackgroundTimer from 'react-native-background-timer';
 import Modal from 'react-native-modal';
 import { Button, TextInput } from 'react-native-paper';
 import SQLiteManager from '../../database/SQLiteManager';
+import { useTheme } from '../../../ThemeContext';
 //import TreinoController from '../../controller/TreinoController';
 //import Training from '../../services/sqlite/Training';
 
 //SQLiteManager.initDB();
 const App = () => {
 
+  const { colors } = useTheme();
   //let treinoController = new Training();
   function resetData() {
     setNomeTreino('');
@@ -298,33 +300,48 @@ const App = () => {
     setCadencia(getCadencia(mediaVelocity, tamRoda));
   }, [tracking]);
 
+  const styleModalWithTheme = {
+    ...styles.modalView,
+    backgroundColor: colors.backgroundModal
+  }
+
+  const styleTextTableCellTheme = {
+    ...styles.textTableCell,
+    color: colors.text
+  }
+
+  const styleTextTableTopTheme = {
+    ...styles.textTableTop,
+    color: colors.text,
+  }
+
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ backgroundColor: "#1C2120" }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ backgroundColor: colors.background }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop:5 }}>
           <View style={{ paddingRight: 5 }}>
-            <Icon name="location-on" size={25} color="white" />
+            <Icon name="location-on" size={25} color={colors.icon} />
           </View>
           <View>
-            <Text style={styles.text}>{cityName}</Text>
+            <Text style={{color: colors.text}}>{cityName}</Text>
           </View>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingTop: 2 }}>
           <View style={{ paddingRight: 5 }}>
-            <Icon name="thermostat" size={25} color="white" />
+            <Icon name="thermostat" size={25} color={colors.icon} />
           </View>
           <View>
-            <Text style={styles.text}>{temperature}º C</Text>
+            <Text style={{color: colors.text}}>{temperature}º C</Text>
           </View>
         </View>
       </View>
 
-      <View style={{ flex: 1, backgroundColor: "#1C2120", alignItems: "center", height: 300, paddingTop: 8 }}>
-        <Text style={{ color: 'white', fontSize: 20 }}>Hoje você pedalou</Text>
+      <View style={{ flex: 1, backgroundColor: colors.background, alignItems: "center", height: 300, paddingTop: 8 }}>
+        <Text style={{ color: colors.text, fontSize: 20 }}>Hoje você pedalou</Text>
         <View style={{ padding: 20, justifyContent: "center", flexDirection: 'row', alignItems: 'baseline' }}>
-          <Text style={{ fontSize: 100, color: "white" }}>{totalDistance.toFixed(2)}</Text>
-          <Text style={{ fontSize: 36, color: "white" }}> Km</Text>
+          <Text style={{ fontSize: 100, color: colors.text }}>{totalDistance.toFixed(2)}</Text>
+          <Text style={{ fontSize: 36, color: colors.text }}> Km</Text>
         </View>
         <View style={{ flexDirection: 'row' }}>
           <TouchableOpacity style={styles.buttonWeek}>
@@ -353,14 +370,14 @@ const App = () => {
         <View>
           {(!playPressed) ? (
             <TouchableOpacity onPress={handlePlayPress} style={styles.buttonPlay}>
-              <Icon name='play-circle' size={80} color="#1C2120" />
+              <Icon name='play-circle' size={80} color={colors.iconPlayButton} />
             </TouchableOpacity>
           ) : (
             <View style={{ flexDirection: 'row' }}>
               <View style={{ paddingRight: 30 }}>
                 {/* {isVisible && ( */}
                 <TouchableOpacity onPress={handlePausePress} style={styles.buttonPause}>
-                  <Icon name={'pause-circle'} size={80} color="#1C2120" />
+                  <Icon name={'pause-circle'} size={80} color={colors.iconPauseButton} />
                 </TouchableOpacity>
                 {/* // <TouchableOpacity onPress={toggleTracking} style={styles.buttonPlay}>
                   //   <Icon name={'play-circle'} size={80} color="#1C2120"/>
@@ -370,10 +387,10 @@ const App = () => {
               </View>
               <View>
                 <TouchableOpacity onPress={showConfirmationModal} style={styles.buttonStop}>
-                  <Icon name='stop-circle' size={80} color="#1C2120" />
+                  <Icon name='stop-circle' size={80} color={colors.iconStopButton} />
                 </TouchableOpacity>
                 <Modal isVisible={isModalVisible}>
-                  <View style={styles.modalView}>
+                  <View style={styleModalWithTheme}>
                     <View style={{ alignItems: 'center', paddingBottom: 10 }}>
                       <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Salvar treino</Text>
                     </View>
@@ -401,23 +418,23 @@ const App = () => {
       <View style={styles.homeScreen}>
 
         <View style={{ flexDirection: "row" }}>
-          <View style={{ flex: 1, backgroundColor: "#1C2120" }}>
+          <View style={{ flex: 1, backgroundColor: colors.background }}>
             <View style={
               {
                 flexDirection: "row",
                 justifyContent: 'center',
                 padding: 25,
-                borderColor: '#FFF',
+                borderColor: colors.borderColorHome,
                 borderTopWidth: 0.3,
                 borderRightWidth: 0.3
               }
             }>
               <View style={{ paddingRight: 10 }}>
-                <Icon name="bolt" size={20} color="white" />
+                <Icon name="bolt" size={20} color={colors.icon} />
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={styles.textTableTop}>Gasto Calorico </Text>
-                <Text style={styles.textTableCell}>{calorias} Cal</Text>
+                <Text style={styleTextTableTopTheme}>Gasto Calorico </Text>
+                <Text style={styleTextTableCellTheme}>{calorias} Cal</Text>
               </View>
             </View>
 
@@ -426,17 +443,17 @@ const App = () => {
                 flexDirection: "row",
                 justifyContent: 'center',
                 padding: 25,
-                borderColor: '#FFF',
+                borderColor: colors.borderColorHome,
                 borderTopWidth: 0.3,
                 borderRightWidth: 0.3
               }
             }>
               <View style={{ paddingRight: 10 }}>
-                <Icon name="monitor-heart" size={20} color="white" />
+                <Icon name="monitor-heart" size={20} color={colors.icon} />
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={styles.textTableTop}>Ritmo</Text>
-                <Text style={styles.textTableCell}>{(Number.isNaN(ritmo)) ? ritmo : 0} min/Km</Text>
+                <Text style={styleTextTableTopTheme}>Ritmo</Text>
+                <Text style={styleTextTableCellTheme}>{(Number.isNaN(ritmo)) ? ritmo : 0} min/Km</Text>
               </View>
             </View>
 
@@ -445,38 +462,38 @@ const App = () => {
                 flexDirection: "row",
                 justifyContent: 'center',
                 padding: 25,
-                borderColor: '#FFF',
+                borderColor: colors.borderColorHome,
                 borderTopWidth: 0.3,
                 borderRightWidth: 0.3
               }
             }>
               <View style={{ paddingRight: 10 }}>
-                <Icon name="pedal-bike" size={20} color="white" />
+                <Icon name="pedal-bike" size={20} color={colors.icon} />
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={styles.textTableTop}>Cadência</Text>
-                <Text style={styles.textTableCell}>{(Number.isNaN(cadencia)) ? cadencia : 0} RPM</Text>
+                <Text style={styleTextTableTopTheme}>Cadência</Text>
+                <Text style={styleTextTableCellTheme}>{(Number.isNaN(cadencia)) ? cadencia : 0} RPM</Text>
               </View>
             </View>
           </View>
 
-          <View style={{ flex: 1, backgroundColor: "#1C2120" }}>
+          <View style={{ flex: 1, backgroundColor: colors.background }}>
 
             <View style={
               {
                 flexDirection: "row",
                 justifyContent: 'center',
                 padding: 25,
-                borderColor: '#FFF',
+                borderColor: colors.borderColorHome,
                 borderTopWidth: 0.3
               }
             }>
               <View style={{ paddingRight: 10 }}>
-                <Icon name="schedule" size={20} color="white" />
+                <Icon name="schedule" size={20} color={colors.icon} />
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={styles.textTableTop}>Tempo Total (H:m:s)</Text>
-                <Text style={styles.textTableCell}>
+                <Text style={styleTextTableTopTheme}>Tempo Total (H:m:s)</Text>
+                <Text style={styleTextTableCellTheme}>
                   {formatTime(timer)}
                 </Text>
               </View>
@@ -487,16 +504,16 @@ const App = () => {
                 flexDirection: "row",
                 justifyContent: 'center',
                 padding: 25,
-                borderColor: '#FFF',
+                borderColor: colors.borderColorHome,
                 borderTopWidth: 0.3
               }
             }>
               <View style={{ paddingRight: 10 }}>
-                <Icon name="speed" size={20} color="white" />
+                <Icon name="speed" size={20} color={colors.icon} />
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={styles.textTableTop}>Vel. média</Text>
-                <Text style={styles.textTableCell}>
+                <Text style={styleTextTableTopTheme}>Vel. média</Text>
+                <Text style={styleTextTableCellTheme}>
                   {
                     (Number.isNaN(mediaVelocity)) ? mediaVelocity : '0'
                   } Km/h
@@ -509,16 +526,16 @@ const App = () => {
                 flexDirection: "row",
                 justifyContent: 'center',
                 padding: 25,
-                borderColor: '#FFF',
+                borderColor: colors.borderColorHome,
                 borderTopWidth: 0.3
               }
             }>
               <View style={{ paddingRight: 10 }}>
-                <Icon name="rocket" size={20} color="white" />
+                <Icon name="rocket" size={20} color={colors.icon} />
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={styles.textTableTop}>Vel. máx</Text>
-                <Text style={styles.textTableCell}>{(velocities.length > 0) ? maxVelocity : '0'} Km/h</Text>
+                <Text style={styleTextTableTopTheme}>Vel. máx</Text>
+                <Text style={styleTextTableCellTheme}>{(velocities.length > 0) ? maxVelocity : '0'} Km/h</Text>
               </View>
             </View>
           </View>
@@ -611,13 +628,13 @@ const styles = StyleSheet.create({
   },
 
   textTableTop: {
-    color: "#FFF",
+    //color: "#FFF",
     //fontWeight: 'bold',
     fontSize: 16,
   },
 
   textTableCell: {
-    color: "#FFF",
+    
     fontSize: 19,
     paddingTop: 10,
     fontWeight: 'bold'
@@ -625,7 +642,7 @@ const styles = StyleSheet.create({
 
   modalView: {
     //margin: 20,
-    backgroundColor: '#1C2120',
+    //backgroundColor: '#1C2120',
     borderRadius: 10,
     padding: 20,
     //justifyContent: 'space-beetwen',
