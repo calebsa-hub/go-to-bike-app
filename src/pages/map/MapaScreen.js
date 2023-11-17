@@ -6,7 +6,8 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import SQLiteManager from '../../database/SQLiteManager';
 import Modal from 'react-native-modal';
-
+import { useTheme } from '../../../ThemeContext';
+import ThemeContext from '../../../ThemeContext';
 export default class MapaScreen extends Component {
   constructor(props) {
     super(props)
@@ -23,11 +24,14 @@ export default class MapaScreen extends Component {
       tempoTotal: 0,
       calorias: 0,
       ritmo: 0,
-
     }
+
     this.getPosition();
     //this.listarTreinos();
   }
+
+  static contextType = ThemeContext;
+  
 
   componentDidMount() {
     this.listarTreinos();
@@ -113,11 +117,29 @@ export default class MapaScreen extends Component {
     this.closeModal();
     this.listarTreinos();
   }
-
+  
   render() {
+    const { colors } = this.context;
+    const containerMapTheme = {
+      ...styles.containerMapa,
+      backgroundColor: colors.background,
+      borderColor: colors.borderColorHome,
+    }
+    const containerOptionsTheme = {
+      ...styles.containerOptions,
+      backgroundColor: colors.background,
+    }
+    const modalViewTheme = {
+      ...styles.modalView,
+      backgroundColor: colors.background,
+    }
+    const containerHistoryTheme = {
+      ...styles.containerHistory,
+      borderColor: colors.borderColorHome,
+    }
     return (
-      <View style={styles.containerPrincipal}>
-        <View style={styles.containerMapa}>
+      <View style={{flex: 1, backgroundColor: colors.background}}>
+        <View style={containerMapTheme}>
           <MapView
             style={{ flex: 1 }}
             // initialRegion={{
@@ -158,47 +180,46 @@ export default class MapaScreen extends Component {
           </MapView>
         </View>
 
-        <View style={styles.containerOptions}>
+        <View style={containerOptionsTheme}>
           <TouchableOpacity style={{ paddingRight: 50 }}>
-            <Icon name='shopping-bag' size={60} color='#FFF' />
+            <Icon name='shopping-bag' size={60} color={colors.icon} />
           </TouchableOpacity>
           <TouchableOpacity>
-            <Icon name='build-circle' size={60} color='#FFF' />
+            <Icon name='build-circle' size={60} color={colors.icon} />
           </TouchableOpacity>
         </View>
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={{ padding: 10, fontSize: 15, fontWeight: 'bold' }}>Seus treinos: </Text>
+          <Text style={{ padding: 10, fontSize: 15, fontWeight: 'bold', color: colors.text }}>Seus treinos: </Text>
           <TouchableOpacity>
-            <Text style={{ padding: 10, fontSize: 15, fontWeight: 'bold' }} onPress={() => this.listarTreinos()}>Atualizar</Text>
+            <Text style={{ padding: 10, fontSize: 15, fontWeight: 'bold', color: colors.text }} onPress={() => this.listarTreinos()}>Atualizar</Text>
           </TouchableOpacity>
         </View>
 
 
         <Modal isVisible={this.state.isModalVisible}>
-          <View style={styles.modalView}>
+          <View style={modalViewTheme}>
             <View style={{ alignItems: 'center', paddingBottom: 10 }}>
-              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Treino selecionado</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors.text }}>Treino selecionado</Text>
             </View>
             <View style={{}}>
               <TextInput
                 placeholder={this.state.nomeTreino}
-                // value={nomeTreino}
                 onChangeText={(text) => this.setTreinoName(text)}
               />
             </View>
             <View>
               <View>
-                <Text style={{ fontSize: 13, fontWeight: 'bold', paddingTop: 10, paddingLeft: 5 }}>{this.state.nomeTreino}</Text>
+                <Text style={{ fontSize: 13, fontWeight: 'bold', paddingTop: 10, paddingLeft: 5, color: colors.text }}>{this.state.nomeTreino}</Text>
               </View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <View style={{ padding: 5 }}>
-                  <Text style={{ paddingBottom: 5 }}>Dist. Total: {this.state.distanciaTotal} Km</Text>
-                  <Text>Tempo: {this.state.tempoTotal} s</Text>
+                  <Text style={{ paddingBottom: 5, color: colors.text }}>Dist. Total: {this.state.distanciaTotal} Km</Text>
+                  <Text style={{ color: colors.text }}>Tempo: {this.state.tempoTotal} s</Text>
                 </View>
                 <View style={{ padding: 5 }}>
-                  <Text style={{ paddingBottom: 5 }}>Gasto calórico: {this.state.calorias} Cal</Text>
-                  <Text>Ritmo: {this.state.ritmo} Km / min </Text>
+                  <Text style={{ paddingBottom: 5, color: colors.text }}>Gasto calórico: {this.state.calorias} Cal</Text>
+                  <Text style={{ color: colors.text }}>Ritmo: {this.state.ritmo} Km / min </Text>
                 </View>
               </View>
             </View>
@@ -209,29 +230,29 @@ export default class MapaScreen extends Component {
             </View>
           </View>
         </Modal>
-        <View style={styles.containerHistory}>
+        <View style={containerHistoryTheme}>
           <ScrollView style={{ height: 300 }}>
             {(this.state.listaTreinos) ?
               (this.state.listaTreinos).map((training, index) => (
                 
                 <TouchableOpacity activeOpacity={0.7} onPress={() => this.drawMap(training.coordenadas)}>
-                  <View style={{ flexDirection: 'row', borderBottomWidth: 0.5, borderColor: 'white', paddingBottom: 5 }} key={index}>
+                  <View style={{ flexDirection: 'row', borderBottomWidth: 0.5, borderColor: colors.borderColorHome, paddingBottom: 5 }} key={index}>
                     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                      <Text style={{ fontSize: 20, fontWeight: 'bold', paddingHorizontal: 15 }}>{this.getData(training.data)}</Text>
-                      <Text>({this.getHora(training.data)})</Text>
+                      <Text style={{ fontSize: 20, fontWeight: 'bold', paddingHorizontal: 15, color: colors.text }}>{this.getData(training.data)}</Text>
+                      <Text style={{ color: colors.text }}>({this.getHora(training.data)})</Text>
                     </View>
                     <View>
                       <View>
-                        <Text style={{ fontSize: 13, fontWeight: 'bold', paddingTop: 10, paddingLeft: 5 }}>{training.nome_treino}</Text>
+                        <Text style={{ fontSize: 13, fontWeight: 'bold', paddingTop: 10, paddingLeft: 5, color: colors.text }}>{training.nome_treino}</Text>
                       </View>
                       <View style={{ flexDirection: 'row' }}>
                         <View style={{ padding: 5 }}>
-                          <Text style={{ paddingBottom: 5 }}>Dist. Total: {training.distancia_total} Km</Text>
-                          <Text>Tempo: {training.tempo_total}</Text>
+                          <Text style={{ paddingBottom: 5, color: colors.text }}>Dist. Total: {training.distancia_total} Km</Text>
+                          <Text style={{ color: colors.text }}>Tempo: {training.tempo_total}</Text>
                         </View>
                         <View style={{ padding: 5 }}>
-                          <Text style={{ paddingBottom: 5 }}>Gasto calórico: {training.calorias} Cal</Text>
-                          <Text>Ritmo: {training.ritmo} Km / min </Text>
+                          <Text style={{ paddingBottom: 5, color: colors.text }}>Gasto calórico: {training.calorias} Cal</Text>
+                          <Text style={{ color: colors.text }}>Ritmo: {training.ritmo} Km / min </Text>
                         </View>
                       </View>
                     </View>
@@ -261,14 +282,14 @@ const styles = StyleSheet.create({
   },
 
   containerMapa: {
-    backgroundColor: 'black',
+    //backgroundColor: 'black',
     height: 300,
-    borderColor: '#FFF',
+    //borderColor: '#FFF',
     borderBottomWidth: 0.3,
   },
 
   containerOptions: {
-    backgroundColor: 'black',
+   // backgroundColor: 'black',
     height: 100,
     flexDirection: 'row',
     alignItems: 'center',
@@ -277,7 +298,7 @@ const styles = StyleSheet.create({
 
   containerHistory: {
     borderTopWidth: 0.3,
-    borderColor: 'white',
+    //borderColor: 'white',
   },
 
   text: {
@@ -354,7 +375,7 @@ const styles = StyleSheet.create({
 
   modalView: {
     //margin: 20,
-    backgroundColor: '#1C2120',
+    //backgroundColor: '#1C2120',
     borderRadius: 10,
     padding: 20,
     //justifyContent: 'space-beetwen',

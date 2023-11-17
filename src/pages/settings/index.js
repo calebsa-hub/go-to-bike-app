@@ -1,87 +1,85 @@
-import React, {Component} from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import React, { Component } from 'react'
+import { StyleSheet, Text, TouchableOpacity, View, Switch, ScrollView } from 'react-native';
+import { useTheme } from '../../../ThemeContext';
 
-export default class History extends Component{
-  render(){
-    return(
-      <View>
-        
-      </View>
-    )
+const SettingsScreen = () => {
+
+  const { isDarkMode, toggleTheme } = useTheme();
+
+  const containerSettingsTheme = {
+    ...styles.containerSettings,
+    borderColor: isDarkMode ? 'white' : '#62BA44'
   }
-}
+
+  const textSettingsTheme = {
+    ...styles.textSettings,
+    color: isDarkMode ? 'white' : '#62BA44',
+  }
+
+  const textoRodapeTheme = {
+    ...styles.textRodape,
+    color: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0, 0, 0, 0.5)',
+  }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: isDarkMode ? 'black' : 'white' }}>
+      <ScrollView>
+        <View style={containerSettingsTheme}>
+          <Text style={textSettingsTheme}>
+            Alternar para {isDarkMode ? 'Modo Claro' : 'Modo Escuro'}
+          </Text>
+
+          <Switch
+            trackColor={{ false: '#767577', true: '#81b0ff' }}
+            thumbColor={isDarkMode ? '#f5dd4b' : '#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleTheme}
+            value={isDarkMode}
+          />
+        </View>
+        <TouchableOpacity>
+          <View style={containerSettingsTheme}>
+            <Text style={textSettingsTheme}>Idioma</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <View style={containerSettingsTheme}>
+            <Text style={textSettingsTheme}>Sobre</Text>
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+      <View style={styles.rodape}>
+        <Text style={textoRodapeTheme}>Vou de Bike</Text>
+        <Text style={textoRodapeTheme}>v1.0.0</Text>
+      </View>
+    </View>
+  );
+};
+
+export default SettingsScreen;
 
 const styles = StyleSheet.create({
-  text: { 
-    color: "white"
+  containerSettings: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    padding: 20,
+    borderBottomWidth: 0.5,
   },
 
-  homeScreen: {
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: "red"
-  },
-
-  mapScreen: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: "#1C2120"
-  },
-
-  historyScreen: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: "#1C2120"
-  },
-  
-  container: {
-    padding: 15,
-  },
-
-  tableHeader: {
-    backgroundColor: '#DCDCDC',
-  },
-
-  buttonPlay: {
-    backgroundColor: "#62BA44",
-    width: 80,
-    height: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 25,
-    borderRadius: 50,
-  },
-
-  buttonWeek: {
-    backgroundColor: "#62BA44",
-    width: 45,
-    height: 45,
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 2,
-    borderRadius: 50,
-  },
-
-  textButtonWeek: {
-    color: "#FFFFFF",
+  textSettings: {
     fontSize: 16,
-    //fontWeight: "bold",
-    alignSelf: "center"
+    fontWeight: '600',
   },
 
-  textTableTop: {
-    color: "#FFF",
-    //fontWeight: 'bold',
-    fontSize: 16,
+  rodape: {
+    position: 'absolute',
+    bottom: 10,
+    width: '100%',
+    alignItems: 'center',
   },
 
-  textTableCell: {
-    color: "#FFF",
-    fontSize: 19,
-    paddingTop: 10,
-    fontWeight: 'bold'
+  textRodape: {
+    fontSize: 12,
   },
 })
